@@ -1,80 +1,611 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
 
-# grillipghtdddddest2gmailcom
+# Visitor Prioritization API V1
+The Visitor Priorit            ization API enables you to manage your Visitor Prioritization policy.
 
-Polls is a simple API aasdasddasdddddddllowing consumers to view polls and vote in them.
+# Group Policy Commands
+<a name="policy-cmd"></a>
 
-## Questions Collection [/questions]
+[Click here](#properties) for the list of Policy properties.
 
-### List All Questions [GET]
+## Policy JSON Document Considerations
+The Policy JSON document contains your rules. For this API, all JSON documents sent to the server use
+
+* `application/x-www-form-urlencoded` as the content type, and
+
+* this format: `query=<url-encoded JSON document>`, where the `query=` portion is *not* URL encoded.
+
+For example, the actual POST data for `getAllPolicyInfoMaps` will look something like this:
+
+> query=%7B%22policyManagerRequest%22%3A%7B%22command%22%3A%22getPolicyInfoMapUsingACGIDs%22%2C%22getPolicyInfoMapUsingACGIDs%22%3A%7B%7D%7D%7D
+
+## Content-Length Header for Post Requests
+You **must** correctly set the `Content-Length` header for all POST requests to the server.
+
+## POST Operations
+
+## Get Information for All Policies [/config-visitor-prioritization-data/api/v1/policymanager?command=getAllPolicyInfoMaps]
+### Get Information for All Policies [POST]
+Gets useful information about all policies.
+
++ Request (application/x-www-form-urlencoded)
+
+        {
+            "policyManagerRequest": {
+                "command":"getPolicyInfoMapUsingACGIDs",
+                "getPolicyInfoMapUsingACGIDs": {}
+            }
+        }
+
 
 + Response 200 (application/json)
 
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
-
-+ Request (application/json)
-
         {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
+            "responseCode":0,
+            "response":[
+                {
+                    "id":102,
+                    "policyId":101,
+                    "createdBy":"username",
+                    "createDate":1399880615407,
+                    "acgId":"3-10TQKCS",
+                    "version":1,
+                    "immutable":false,
+                    "activatedProduction":0,
+                    "activatedStaging":0,
+                    "activatedTest":0,
+                    "description":null,
+                    "policyName":"username_test",
+                    "assetId":0,
+                    "cloudletId":1,
+                    "cloudletConfig": {
+                        "id":1,
+                        "key":"VP",
+                        "name":"VISITORPRIORITIZATION",
+                        "featureKey":"visitor_prioritization",
+                        "engProduct":"Cloudlets::Visitor_Prioritization",
+                        "policyFileNamePrefix":"nimbus_",
+                        "openAPIContextRoot":"/configure-visitor-prioritization-data",
+                        "isInternal":false,
+                        "stagingLocation":null,
+                        "productionLocation":null,
+                        "logsLocation":null
+                    },
+                    "policyDescription":"Test description.",
+                    "policyCreatedBy":"username",
+                    "policyLastModifiedBy":"username",
+                    "policyCreateDate":1399880598512,
+                    "policyLastModifiedDate":1399880615407,
+                    "matchRules":null
+                }
+            ],
+            "i18nCode":0,"englishMessage":null
         }
 
-+ Response 201 (application/json)
 
-    + Headers
 
-            Location: /questions/2
+## Create a Policy [/config-visitor-prioritization-data/api/v1/policymanager?command=create]
+### Create [POST]
+Create a new Visitor Prioritization policy.
+
++ Request (application/x-www-form-urlencoded)
+
+        {
+            "policyManagerRequest":{
+                "command":"create",
+                "create":{
+                    "cloudletId":"1",
+                    "policyName":"TestPolicy3",
+                    "policyDescription":"TestPolicy3 notes."
+                }
+            }
+        }
+
+
++ Response 200 (application/json)
+
+        {
+           "responseCode": 0,
+            "response": [
+               {
+                  "id": 436,
+                  "policyId": 1001,
+                  "createdBy": "cloudlets",
+                  "createDate": 1400601368151,
+                  "acgId": "3-10TQKCS",
+                  "version": 2,
+                  "immutable": false,
+                  "activatedProduction": 0,
+                  "activatedStaging": 0,
+                  "activatedTest": 0,
+                  "description": "Description for all policy versions",
+                  "policyName": "Test1",
+                  "assetId": 0,
+                  "cloudletId": 1,
+                  "cloudletConfig": {},
+                  "policyDescription": null,
+                  "policyCreatedBy": "cloudlets",
+                  "policyLastModifiedBy": "cloudlets",
+                  "policyCreateDate": 1400535431324,
+                  "policyLastModifiedDate": 1400601173283,
+                  "matchRules": null
+               }
+            ],
+            "i18nCode": 0,
+            "englishMessage": null
+        }
+
+
+
+## List a Policy [/config-visitor-prioritization-data/api/v1/policymanager?command=read]
+### List [POST]
+List the configuration of a policy version.
+
+The rule configuration information is listed in the [`matchRules`](#matchrule-properties) field of the response JSON.
+
++ Request (application/x-www-form-urlencoded)
+
+        {"policyManagerRequest":{"command":"read","read":{"id":"1133"}}}
+
+
++ Response 200
+
+        {
+            "responseCode":0,
+            "response":{
+                "id":1133,
+                "policyId":686,
+                "createdBy":"cloudlets",
+                "createDate":1407339219183,
+                "acgId":"3-10TQKCS",
+                "version":1,
+                "immutable":false,
+                "activatedProduction":0,
+                "activatedStaging":0,
+                "activatedTest":0,
+                "description":"Default description for all versions",
+                "policyName":"1ERPolicy",
+                "assetId":0,
+                "cloudletId":1,
+                "cloudletConfig":{
+                    "id":0,
+                    "key":"VP",
+                    "name":"VISITORPRIORITIZATION",
+                    "featureKey":"visitor_prioritization",
+                    "engProduct":"Cloudlets::Visitor_Prioritization",
+                    "policyFileNamePrefix":"nimbus_",
+                    "openAPIContextRoot":"/config-visitor-prioritization-data",
+                    "isInternal":true,
+                    "stagingLocation":"tapioca_staging_ump_files",
+                    "productionLocation":"tapioca_ump_files",
+                    "logsLocation":null
+                },
+                "policyDescription":"Sample Description",
+                "policyCreatedBy":"cloudlets",
+                "policyLastModifiedBy":"cloudlets",
+                "policyCreateDate":1407160924865,
+                "policyLastModifiedDate":1407339219183,
+                "matchRules":[{
+                    "type":"vpMatchRule",
+                    "end":0,
+                    "id":0,
+                    "matchURL":null,
+                    "matches":[{
+                        "caseSensitive":false,
+                        "matchOperator":"contains",
+                        "matchType":"protocol",
+                        "matchValue":"http",
+                        "negate":false
+                    },
+                    {
+                        "caseSensitive":false,
+                        "matchOperator":"contains",
+                        "matchType":"hostname",
+                        "matchValue":"source.com",
+                        "negate":false
+                    },
+                    {
+                        "caseSensitive":false,
+                        "matchOperator":"contains",
+                        "matchType":"query",
+                        "matchValue":"test=null",
+                        "negate":false
+                    }],
+                    "name":"rule 1",
+                    "start":0,
+                    "useIncomingQueryString":false
+                }]
+            },
+            "i18nCode":0,
+            "englishMessage":null
+        }
+
+
+
+## Update a Policy [/config-visitor-prioritization-data/api/v1/policymanager?command=update ]
+# Update [POST]
+Make updates to a Visitor Prioritization policy.
+
+**Note:** The response contains a new ID and other fields that were updated by the server.
+
++ Request (application/x-www-form-urlencoded)
+
+        {"policyManagerRequest":{"command":"update","update":{"overwriteRules":true,"id":435,"policyId":122,"createdBy":"cloudlets","createDate":1400782263395,"version":10,
+            "immutable":false,"activatedProduction":0,"activatedStaging":0,"activatedTest":0,"description":"Save a new version","policyName":"14_3VP_Policy",
+            "assetId":0,"cloudletId":1,"cloudletConfig":{},"policyDescription":"specific version description","policyCreatedBy":"username",
+            "policyLastModifiedBy":"cloudlets","policyCreateDate":1399997852450,"policyLastModifiedDate":1400782263395,
+            "matchRules":[{"type":"vpMatchRule","end":0,"passThroughPercent":50,"id":0,"matchURL":"HTTP://akamai.com/sourceURL/update","name":"rule 1",
+                "start":0,"useIncomingQueryString":true}]}}}
+
++ Response 200 (application/json)
+
+
+        {
+            "responseCode":0,
+                "response":{
+                    "id":436,
+                    "policyId":1001,
+                    "createdBy":"cloudlets",
+                    "createDate":1400782263395,
+                    "acgId":"3-10TQKCS",
+                    "version":10,
+                    "immutable":false,
+                    "activatedProduction":0,
+                    "activatedStaging":0,
+                    "activatedTest":0,
+                    "description":"Save a new version",
+                    "policyName":"14_3VP_Policy",
+                    "assetId":0,
+                    "cloudletId":1,
+                    "cloudletConfig":{},
+                    "policyDescription":"specific version description",
+                    "policyCreatedBy":"username",
+                    "policyLastModifiedBy":"username2",
+                    "policyCreateDate":1399997852450,
+                    "policyLastModifiedDate":1400782263395,
+                    "matchRules":[
+                    {
+                        "type":"vpMatchRule",
+                        "end":0,
+                        "id":0,
+                        "passThroughPercent":0.05,
+                        "matchURL":null,
+                        "matches":[
+                        {
+                            "caseSensitive":false,
+                            "matchOperator":"contains",
+                            "matchType":"protocol",
+                            "matchValue":"HTTP",
+                            "negate":false
+                        },
+                        {
+                            "caseSensitive":false,
+                            "matchOperator":"contains",
+                            "matchType":"hostname",
+                            "matchValue":"test.akamai.com",
+                            "negate":false
+                        },
+                        {
+                            "caseSensitive":false,
+                            "matchOperator":"contains",
+                            "matchType":"path",
+                            "matchValue":"/sourceURL",
+                            "negate":false
+                        }
+                        ],
+                            "name":"rule 1",
+                            "start":0,
+                            "useIncomingQueryString":true
+                    }
+                    ]
+                },
+                "i18nCode":0,
+                "englishMessage":null
+        }
+
+
+## List Policy Information [/config-visitor-prioritization-data/api/v1/policymanager?command=getPolicyInfoList]
+### List Policy Information [POST]
+List all information about each policy version, except for the `matchRules`.
+
++ Request (application/x-www-form-urlencoded)
+
+        {
+            "policyManagerRequest":{
+                "command":"getPolicyInfoList",
+                "getPolicyInfoList":{
+                    "policyId":"243"
+                }
+            }
+        }
+
+
++ Response 200 (application/json)
+
+        {
+            "responseCode":0,
+            "response":[{
+                "id":351,
+                "policyId":243,
+                "createdBy":"ccare2",
+                "createDate":1403050992316,
+                "acgId":"3-10TQKCS",
+                "version":1,
+                "immutable":false,
+                "activatedProduction":0,
+                "activatedStaging":0,
+                "activatedTest":0,
+                "description":null,
+                "policyName":"Test_VP_Policy",
+                "assetId":0,
+                "cloudletId":1,
+                "cloudletConfig":{
+                    "id":0,
+                    "key":"VP",
+                    "name":"VISITORPRIORITIZATION",
+                    "featureKey":"visitor_prioritization",
+                    "engProduct":"Cloudlets::Visitor_Prioritization",
+                    "policyFileNamePrefix":"nimbus_",
+                    "openAPIContextRoot":"/config-visitor-prioritization-data",
+                    "isInternal":true,
+                    "stagingLocation":"tapioca_staging_ump_files",
+                    "productionLocation":"tapioca_ump_files",
+                    "logsLocation":null
+                },
+                "policyDescription":null,
+                "policyCreatedBy":"cloudletsuser",
+                "policyLastModifiedBy":"testuser2",
+                "policyCreateDate":1403036738153,
+                "policyLastModifiedDate":1405438191162,
+                "matchRules":null
+            }],
+            "i18nCode":0,
+            "englishMessage":null
+        }
+
+
+## Clone a Policy [/config-visitor-prioritization-data/api/v1/policymanager?command=clone]
+### Clone a Policy [POST]
+Make a copy of an existing policy version.
+
+**Note:** The new policy version will receive the next available version number.
+
++ Request (application/x-www-form-urlencoded)
+
+        {
+            "policyManagerRequest":{
+                "command":"clone",
+                "clone":{
+                    "id":"1149"
+                }
+            }
+        }
+
+
++ Response 200 (application/json)
+
+        {
+            "responseCode":0,
+            "response":{
+                "id":1178,
+                "policyId":764,
+                "createdBy":"cloudlets",
+                "createDate":1407352490414,
+                "acgId":"3-10TQKCS",
+                "version":5,
+                "immutable":false,
+                "activatedProduction":0,
+                "activatedStaging":0,
+                "activatedTest":0,
+                "description":null,
+                "policyName":"TestPolicy3",
+                "assetId":0,
+                "cloudletId":1,
+                "cloudletConfig":null,
+                "policyDescription":"TestPolicy3 notes.",
+                "policyCreatedBy":"cloudlets",
+                "policyLastModifiedBy":"cloudlets",
+                "policyCreateDate":1407348215182,
+                "policyLastModifiedDate":1407348215182,
+                "matchRules":null
+            },
+            "i18nCode":0,
+            "englishMessage":null
+        }
+
+
+# Group Policy Activation Commands
+<a name="act-cmd"></a>
+[Click here](#properties) for the list of properties returned.
+## Activate a Policy [/config-visitor-prioritization-data/api/v1/policymanager]
+### Activate a Policy [POST]
+Activate a specified Cloudlet policy.
+
+**Note the following *before* using this command:**
+
+* You must first run the **List Policy Activation Info** command in order to get the correct `arlId` (`fileId`).
+* The `policyVersionId` corresponds to the `tapiocaIDs`. When issuing this command, make sure you are activating the correct version.
+The sample request uses `tapiocaIDs` (`policyVersionId`) 3668, which is version 1.
+* The generated policy file will be propagated to the selected environment. After activation completes, the policy will be available for use.
+
++ Request (application/x-www-form-urlencoded)
+
+        {
+            "policyManagerRequest":{
+                "command":"activate",
+                "activate":{
+                    "tapiocaIDs":[3668],
+                    "arlId":"217315",
+                    "assetId":"0",
+                    "network":"staging"
+                }
+            }
+        }
+
++ Response 200 (application/json)
 
     + Body
 
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
+                "responseCode":0,
+                "response":null,
+                "i18nCode":0,
+                "englishMessage":null
             }
+
+
+## List Policy Activations [/config-visitor-prioritization-data/api/v1/common/activation{?historyOnly}]
+### List Policy Activations [GET]
+List policies and provide policy-specific activation information.
+
+In the response, when
+
+* **historyOnly = true**, only the policy activation history is returned.
+* **historyOnly = false**, the history and the policies available for activation are returned.
+
+For example :
+
+    + historyOnly (optional, string, `false`) ... If true, include the history.
+        + Values
+            + `true`
+            + `false`
+
+**Please Note:** During activation you will need the `fileId`, which corresponds to the `arlId`.
+
++ Response 200 (application/json)
+
+    + Body
+
+            [
+            {
+                "version":"2",
+                "activatedPolicyVersions":[
+                    {
+                        "stageStatus":"3000",
+                        "productionLastUpdated":null,
+                        "stageLastUpdated":1415297386000,
+                        "policies":[
+                            {
+                                "policyName":"TestPolicyv1",
+                                "cloudletId":0,
+                                "versions":[
+                                    {
+                                        "version":"1",
+                                        "policyVersionId":3668,
+                                        "acgId":"3-10TAKCB"
+                                    }
+                                ],
+                                "id":2501
+                            }
+                        ],
+                        "productionStatus":null,
+                        "fileId":217315,
+                        "createdBy":"tester",
+                        "assetId":0,
+                        "propertyName":"tester.akamai.com",
+                        "id":1421,
+                        "type":"ump"
+                    }
+                ],
+            ...
+
+
+
+# Group Properties
+<a name="properties"></a>
+This section provides information on the properties included in the requests or responses.
+The properties are grouped in the following categories:
+
+* policy properties
+* matchRules properties
+    * matches properties
+        * matchValue properties (examples only)
+
+## Policy Properties
+<a name="policy-properties"></a>
+The Policy object has these properties.
+
+| Property  |  Description |
+|---|---|
+| **acgId** | Akamai use only.
+| **activatedProduction** | If `true`, this policy is activated in the production network.
+| **activatedStaging** | If `true`, this policy is activated in the staging network.
+| **activatedTest** | If `true`, this policy is activated in the test/QA network.
+| **arlId** | Also known as the `fileId`, this property is the ID associated with the Akamai Resource Locator (ARL).
+| **assetId** |    Akamai use only.
+| **cloudletConfig** | Akamai use only.
+| **cloudletId** | Akamai use only.
+| **createdBy** | The name of the user who created this specific policy.
+| **createDate** | The date this specific policy was created (milliseconds since epoch).
+| **description** | The description of this specific policy. This property is not assigned by Akamai.
+| **fileId** | Also known as the `arlId`, this property is the ID associated with the Akamai Resource Locator (ARL).
+| **id** | The unique ID that corresponds to a specific policy.
+| **immutable** | Akamai use only.
+| **matchRules** | A JSON structure that defines the rules for this policy. This property is not assigned by Akamai.
+| **policyCreatedBy** | The user who created the initial policy.
+| **policyCreateDate** | The date the initial policy was created (milliseconds since epoch).
+| **policyDescription** |  The default description for every version of the policy. This property is not assigned by Akamai.
+| **policyId** | Akamai use only.
+| **policyName** | The name used for every version of this policy. This property is not assigned by Akamai.
+| **policyLastModifiedBy** | The user who last modified the policy.
+| **policyLastModifiedDate** | The date the initial policy was modified (milliseconds since epoch).
+| **policyVersionId** | Also known as `tapiocaIDs`, this property is the ID associated with a specific policy version.
+| **tapiocaIDs** | Also known as `policyVersionId`, this property is the ID associated with a specific policy version. The expected value for this property is an array of integers.
+| **version** | The specific version of this policy.
+
+
+## matchRules Properties
+The 'matchRules' property contains all of your rules. Some example use cases:
+
+* Pass through all HTTP requests that end in *jpg* or *png* with a probability of 95%.
+
+* Pass through HTTP requests with the vanity/marketing pathname of *'/shoes'* with a probability of 5%.
+<a name="matchrule-properties"></a>
+A `matchRules` property includes the following properties:
+
+| Property  |  Description |
+|---|---|
+| **end** | The end time (in milliseconds since the epoch) this match will be valid.
+| **id** | Akamai use only.
+| **matches** | See `matches` below.
+| **matchURL** | If using a URL match, this property is the URL that Visitor Prioritization will use to match the incoming request.
+| **name** | The name of the rule.
+| **passThroughPercent** | A value of -1 means send everyone to the waiting room. The range 0.000 - 99.000 specifies the percentage of requests that will pass through to the origin. The value of 100 means the request will always pass through to the origin.
+| **type** | The type of Cloudlet. For Visitor Prioritization use the string `vpMatchRule`.
+| **start** | The start time (in milliseconds since the epoch) this match will be valid.
+| **useIncomingQueryString** | If `true`, Visitor Prioritization will pass through the request query string.
+
+
+### Matches Properties
+Each object in the `matches` property defines potential conditions (caseSensitive, matchType, matchValue, negate).
+If all of the conditions you set are true, then the Edge Server will pass the request through to the origin server based on your passThroughPercent setting.
+
+<a name="match-properties"></a>
+A `matches` property contains an array of objects with the following properties/conditions:
+
+| Property  |  Description |
+|---|---|
+| **caseSensitive** | If `true`, the match is case sensitive.
+| **matchOperator** | You must set this property to `contains`.
+| **matchType** | The type of match used. Possible values include: `hostname`, `path`, `extension`, `query`, `cookie`, `protocol`, `continent`, `countrycode`, and `regioncode`.
+| **matchValue** | This depends on the `matchType`. If the `matchType` is `hostname`, then `matchValue` will be the Fully qualified domain name, like `www.akamai.com`. See the `matchValue Examples` section below.
+| **negate** | If `true`, negates the match.
+
+
+#### matchValue Property Examples
+<a name="matchvalue-properties"></a>
+The `matchValue` properties provide information about the match types used to conditionally pass through the request.
+
+> **Note:** Match types with an **"m"** support multiple space-separated values (not names).
+
+| matchType  | Description |  matchValue Example |
+|---|---| --- |
+| **continent** | The continent to match on.|  NA  (See: https://control.akamai.com/dl/edgescape/continentCodes.csv)
+| **cookie** | The cookie value(s) to match on. | name=value1
+| **countrycode** | The country to match on. | US (See: https://control.akamai.com/dl/edgescape/cc2continent.csv)
+| **extension (m)** | The file extension(s) to match on. | jpg png gif
+| **hostname (m)** | The hostname(s) to match on. | `www.akamai.com`
+| **path (m)** | The path(s) to match on. | /clothing/children/shoes/shoe1.jpg
+| **protocol** | The protocol to match on. | http
+| **query (m)** | The query value(s) to match on. | `name` or `name=value1` or `name=value1 value2`
+| **regioncode** | The region within a country to match on, like a state or province. |  MA (See: https://control.akamai.com/dl/edgescape/region_codes.txt)
