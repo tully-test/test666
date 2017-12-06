@@ -1,262 +1,80 @@
 FORMAT: 1A
-HOST: https://api.ciscospark.com/v1/
+HOST: http://polls.apiblueprint.org/
 
-# Whiteboards
+# ghtest
 
-Cisco Spark whiteboards give users access to drawing and annotation tools right in their Spark client. Whiteboards can be created individually or collaboratively as a group and are saved in a Spark room. Use this API to list whiteboards in any room that you're in, create new whiteboards, or retrieve individual whiteboard strokes or rendered images.
+Polls is a simple API allowing consumers to view polls and vote in them.
 
-## Whiteboard Collection [/whiteboards]
+## Questions Collection [/questions]
 
-### List Whiteboards [GET /whiteboards{?roomId,max}]
-
-List whiteboards in your organization. If the client provides `application/json;ciscospark+v1` in the header then encrypted content of response will not be decoded.
-
-+ Request
-    + Headers
-
-            Authorization: Bearer YOUR_ACCESS_TOKEN
-
-+ Parameters
-    + roomId: `Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0` (string, optional) - Limit results to specific rooms, by ID. Accepts up to ### room IDs separated by commas.
-    + max: `5` (number, optional) - Limit the maximum number of whiteboards returned in the response.
-        + Default: `100`
+### List All Questions [GET]
 
 + Response 200 (application/json)
 
-    + Body
-
+        [
             {
-                "items": [
+                "question": "Favourite programming language?",
+                "published_at": "2015-08-05T08:40:51.620Z",
+                "choices": [
                     {
-                        "id": "Y2lzY29zcGFyazovL3VzL1dISVRFQk9BUkQvZmQ0OGEyNDAtMjNlYi0xMWU0LWJlNTEtNTZhYTBhNmZkNWRh",
-                        "roomId": "Y2lzY29zcGFyazovL3VzL1JPT00vYTE3MzRiZDAtNjY4OS0xMWU3LWI4ZmYtNWJlMTU1M2M3MjE2",
-                        "creatorId" : "Y2lzY29zcGFyazovL3VzL1BFT1BMRS8zODQwMDAwMS04Y2YwLTExYmQtYjIzZS0xMGI5NmU0ZWYwMGQ=",
-                        "created": "2016-07-19T18:59:19.033Z",
-                        "updated" : "2016-07-19T19:01:34.033Z",
-                        "encryptionKeyUrl": "kms://cisco.com/keys/862c7b21-a331-48a2-9ddf-d9e99ed4f25d"
-
-                    },
-                    {
-                        "id": "Y2lzY29zcGFyazovL3VzL1dISVRFQk9BUkQvMzg0MDAwMDEtOGNmMC0xMWJkLWIyM2UtMTBiOTZlNGVmMDBk",
-                        "roomId": "Y2lzY29zcGFyazovL3VzL1JPT00vYTE3MzRiZDAtNjY4OS0xMWU3LWI4ZmYtNWJlMTU1M2M3MjE2",                        
-                        "creatorId" : "Y2lzY29zcGFyazovL3VzL1BFT1BMRS8zODQwMDAwMS04Y2YwLTExYmQtYjIzZS0xMGI5NmU0ZWYwMGQ=",
-                        "created": "2016-07-19T18:59:19.033Z",
-                        "updated" : "2016-07-19T19:01:34.033Z"
-                        
+                        "choice": "Swift",
+                        "votes": 2048
+                    }, {
+                        "choice": "Python",
+                        "votes": 1024
+                    }, {
+                        "choice": "Objective-C",
+                        "votes": 512
+                    }, {
+                        "choice": "Ruby",
+                        "votes": 256
                     }
                 ]
             }
-    
-### Create Whiteboard [POST /whiteboard]
+        ]
 
-Create a new whiteboard in a specific room.
+### Create a New Question [POST]
+
+You may create your own question using this action. It takes a JSON
+object containing a question and a collection of answers in the
+form of choices.
 
 + Request (application/json)
-    + Headers
 
-            Authorization: Bearer YOUR_ACCESS_TOKEN
-            
-    + Body
-
-            {
-                "roomId": "Y2lzY29zcGFyazovL3VzL1JPT00vYTE3MzRiZDAtNjY4OS0xMWU3LWI4ZmYtNWJlMTU1M2M3MjE2"
-            }
+        {
+            "question": "Favourite programming language?",
+            "choices": [
+                "Swift",
+                "Python",
+                "Objective-C",
+                "Ruby"
+            ]
+        }
 
 + Response 201 (application/json)
+
+    + Headers
+
+            Location: /questions/2
+
     + Body
-    
+
             {
-                "id": "Y2lzY29zcGFyazovL3VzL1dISVRFQk9BUkQvZmQ0OGEyNDAtMjNlYi0xMWU0LWJlNTEtNTZhYTBhNmZkNWRh",
-                "roomId": "Y2lzY29zcGFyazovL3VzL1JPT00vYTE3MzRiZDAtNjY4OS0xMWU3LWI4ZmYtNWJlMTU1M2M3MjE2",        
-                "creatorId" : "Y2lzY29zcGFyazovL3VzL1BFT1BMRS8zODQwMDAwMS04Y2YwLTExYmQtYjIzZS0xMGI5NmU0ZWYwMGQ=",
-                "created": "2016-07-19T18:59:19.033Z",
-                "updated" : "2016-07-19T19:01:34.033Z"
-            }
-
-### Render strokes into Whiteboard Image [GET /whiteboards/{whiteboardId}/image]
-
-Render the current state of a whiteboard as an image. Specify the image format and dimensions in the `Accept` header.
-
-+ Request (application/octet-stream)
-    + Headers
-
-            Accept: image/png;height=320;width=320 - supports `jpg` and `png`
-            Authorization: Bearer YOUR_ACCESS_TOKEN
-
-+ Parameters
-    + whiteboardId: `Y2lzY29zcGFyazovL3VzL1JPT00vYTE3MzRiZDAtNjY4OS0xMWU3LWI4ZmYtNWJlMTU1M2M3MjE2` (string, required) - Unique identifier for the whiteboard
-            
-+ Response 200
-        
-    + Headers
-    
-            Content-Type: application/png
-            Content-Size: 12312
-
-### Get Whiteboard Details [GET /whiteboards/{whiteboardId}]
-
-Show details for a whiteboard, by ID.
-
-Specify the whiteboard ID in the `whiteboardId` parameter in the URI.
-
-+ Request (application/json)
-    + Headers
-
-            Authorization: Bearer YOUR_ACCESS_TOKEN
-+ Parameters
-    + whiteboardId: `Y2lzY29zcGFyazovL3VzL1JPT00vYTE3MzRiZDAtNjY4OS0xMWU3LWI4ZmYtNWJlMTU1M2M3MjE2` (string, required) - Unique identifier for the whiteboard
-
-+ Response 200 (application/json) 
-        
-    + Body
-    
-            {       
-                "id": "Y2lzY29zcGFyazovL3VzL1dISVRFQk9BUkQvZmQ0OGEyNDAtMjNlYi0xMWU0LWJlNTEtNTZhYTBhNmZkNWRh",
-                "roomId": "Y2lzY29zcGFyazovL3VzL1JPT00vYTE3MzRiZDAtNjY4OS0xMWU3LWI4ZmYtNWJlMTU1M2M3MjE2",            
-                "creatorId" : "Y2lzY29zcGFyazovL3VzL1BFT1BMRS8zODQwMDAwMS04Y2YwLTExYmQtYjIzZS0xMGI5NmU0ZWYwMGQ=",
-                "created": "2016-07-19T18:59:19.033Z",
-                "updated" : "2016-07-19T19:01:34.033Z"
-            }
-
-### Get Whiteboard Strokes [GET /whiteboards/{whiteboardId}/strokes]
-
-List the individual strokes on a whiteboard. Two types of whiteboard strokes will be returned: `STRING` and `FILE`. `STRING` type whiteboards only contains strokes. `FILE` type whiteboards include a base image with strokes applied over the image.
-
-An encryption URL is only returned in cases when client supports E2E. (Is this a request header?)
-
-+ Request (application/json)
-    + Headers
-
-            Authorization: Bearer YOUR_ACCESS_TOKEN
-+ Parameters
-    + whiteboardId: `Y2lzY29zcGFyazovL3VzL1JPT00vYTE3MzRiZDAtNjY4OS0xMWU3LWI4ZmYtNWJlMTU1M2M3MjE2` (string, required) - Unique identifier for the whiteboard
-
-+ Response 200 (application/json) 
-        
-    + Body
-    
-            {
-                "items": [
+                "question": "Favourite programming language?",
+                "published_at": "2015-08-05T08:40:51.620Z",
+                "choices": [
                     {
-                        "encryptionKeyUrl": "kms://cisco.com/keys/862c7b21-a331-48a2-9ddf-d9e99ed4f25d",
-                        "created": "2016-07-19T18:59:19.033Z",
-                        "creatorId": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS82Yzc1ZmNlYy03ZTk2LTQwMzgtODZhZi0wMTEzNTNjMGQxZTQ",
-                        "modified": "2016-07-19T19:59:19.033Z",
-                        "payload": {       
-                            "type": "STRING",     
-                            "data": {
-                                "type": "curve",                
-                                "curveId": "Y2lzY29zcGFyazovL3VzL0NVUlZFL2VlOWM5MmFiLWIyYzEtNGJiNi1hODg0LWExOGIwOTA5NmRmZQ==",
-                                "stride": 3,
-                                "curvePoints": [
-                                    414.093,
-                                    169.127,
-                                    2,
-                                    414.093,
-                                    169.127,
-                                    2,
-                                    414.093,
-                                    169.436,
-                                    2.045,
-                                    414.093,
-                                    171.7,
-                                    2.153,
-                                    414.093,
-                                    181.716,
-                                    2.283,
-                                    414.093,
-                                    201.951,
-                                    2.369,
-                                    414.633,
-                                    235.214,
-                                    2.363,
-                                    420.679,
-                                    283.267,
-                                    2.224
-                                ],
-                                "drawMode": "NORMAL",
-                                "color": {
-                                    "red": 0,
-                                    "green": 0,
-                                    "blue": 0,
-                                    "alpha": 1
-                                },
-                                "id": "Y2lzY29zcGFyazovL3VzL1NUUk9LRS9kYzFkZDY3MC02NzVhLTExZTctYTUwNy1jNTljNjVjNjRjZmQ=",                
-                                "sender": {
-                                    "name": "Alice",
-                                    "id": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS82Yzc1ZmNlYy03ZTk2LTQwMzgtODZhZi0wMTEzNTNjMGQxZTQ"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "encryptionKeyUrl": "kms://cisco.com/keys/862c7b21-a331-48a2-9ddf-d9e99ed4f25a",
-                        "created": "2016-07-19T17:59:19.033Z",
-                        "creatorId": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS82Yzc1ZmNlYy03ZTk2LTQwMzgtODZhZi0wMTEzNTNjMGQxZTQ",
-                        "modified": "2016-07-19T18:01:19.033Z",
-                        "payload": {       
-                            "type": "STRING",
-                            "data": {
-                                "type": "curve",                
-                                "curveId": "Y2lzY29zcGFyazovL3VzL0NVUlZFL2VlOWM5MmFiLWIyYzEtNGJiNi1hODg0LWExOGIwOTA5NmRmYQ==",
-                                "stride": 3,
-                                "curvePoints": [
-                                    414.093,
-                                    169.127,
-                                    2,
-                                    414.093,
-                                    169.127,
-                                    2,
-                                    414.093,
-                                    169.436,
-                                    2.045,
-                                    414.093,
-                                    171.7,
-                                    2.153,
-                                    414.093,
-                                    181.716,
-                                    2.283,
-                                    414.093,
-                                    201.951,
-                                    2.369,
-                                    414.633,
-                                    235.214,
-                                    2.363,
-                                    420.679,
-                                    283.267,
-                                    2.224
-                                ],
-                                "drawMode": "NORMAL",
-                                "color": {
-                                    "red": 0,
-                                    "green": 0,
-                                    "blue": 0,
-                                    "alpha": 1
-                                },
-                                "id": "Y2lzY29zcGFyazovL3VzL1NUUk9LRS9kYzFkZDY3MC02NzVhLTExZTctYTUwNy1jNTljNjVjNjRjZmU=",            
-                                "action": "contentCommit",
-                                "sender": {
-                                    "name": "Alice",
-                                    "id": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS82Yzc1ZmNlYy03ZTk2LTQwMzgtODZhZi0wMTEzNTNjMGQxZTQ"
-                                }
-                            }
-                        }
+                        "choice": "Swift",
+                        "votes": 0
+                    }, {
+                        "choice": "Python",
+                        "votes": 0
+                    }, {
+                        "choice": "Objective-C",
+                        "votes": 0
+                    }, {
+                        "choice": "Ruby",
+                        "votes": 0
                     }
-                ]    
+                ]
             }
-
-### Delete a Whiteboard [DELETE /whiteboards/{whiteboardId}]
-
-Delete a whiteboard, by whiteboard ID.
-
-Specify the whiteboard ID in the `whiteboardId` parameter in the URI.
-
-+ Request 
-    + Headers
-
-            Authorization: Bearer YOUR_ACCESS_TOKEN
-
-+ Parameters
-    + whiteboardId: `Y2lzY29zcGFyazovL3VzL1JPT00vYTE3MzRiZDAtNjY4OS0xMWU3LWI4ZmYtNWJlMTU1M2M3MjE2` (string, required) - Unique identifier for the whiteboard
-
-+ Response 204
